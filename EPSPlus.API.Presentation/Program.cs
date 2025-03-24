@@ -1,5 +1,6 @@
 
 using EPSPlus.API.Presentation.Extensions;
+using EPSPlus.API.Presentation.Middlewares;
 using Microsoft.OpenApi.Models;
 using Serilog;
 using System.Text.Json.Serialization;

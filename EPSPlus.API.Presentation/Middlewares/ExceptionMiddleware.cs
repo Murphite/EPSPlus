@@ -1,9 +1,12 @@
-﻿using System.Net;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Net;
+using EPSPlus.Domain.Responses;
+using Microsoft.AspNetCore.Diagnostics;
 using Newtonsoft.Json;
 
 namespace EPSPlus.API.Presentation.Middlewares;
 
-public class ExceptionMiddleware : IExceptionHandler
+public class ExceptionMiddleware 
 {
     private readonly RequestDelegate _next;
     private readonly ILogger _logger;
@@ -63,6 +66,4 @@ public class ExceptionMiddleware : IExceptionHandler
         await response.WriteAsync(result);
     }
 
-
-    
 }

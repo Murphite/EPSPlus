@@ -1,6 +1,6 @@
 ﻿using EPSPlus.Domain.Entities;
 using EPSPlus.Domain.Enum;
-using EPSPlus.Domain.IRepositories;
+using EPSPlus.Domain.Interfaces;
 using EPSPlus.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
@@ -33,7 +33,7 @@ public class TransactionRepository : ITransactionRepository
     public async Task UpdateBenefitEligibilityAsync()
     {
         var eligibleMembers = await _context.Members
-            .Where(m => m.Status == MembershipStatus.Active)
+            .Where(m => m.User.IsActive == true) // Check User's IsActive status
             .ToListAsync();
 
         foreach (var member in eligibleMembers)

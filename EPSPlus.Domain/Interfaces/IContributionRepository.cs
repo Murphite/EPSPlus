@@ -3,7 +3,7 @@
 using EPSPlus.Domain.Entities;
 using EPSPlus.Domain.Responses;
 
-namespace EPSPlus.Domain.IRepositories;
+namespace EPSPlus.Domain.Interfaces;
 
 public interface IContributionRepository
 {

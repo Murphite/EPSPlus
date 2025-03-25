@@ -1,13 +1,12 @@
 ﻿
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using EPSPlus.Application.DTOs;
+using EPSPlus.Domain.Responses;
 
-namespace EPSPlus.Application.Interface
+namespace EPSPlus.Application.Interface;
+
+public interface IEmployerService
 {
-    internal interface IEmployerService
-    {
-    }
+    Task<ServerResponse<EmployerDto>> RegisterEmployerAsync(EmployerDto employerDto);
+    Task<ServerResponse<EmployerDto>> GetEmployerByIdAsync(string employerId);
+    Task<ServerResponse<string>> UpdateEmployerAsync(EmployerDto employerDto);
 }

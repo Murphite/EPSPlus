@@ -10,10 +10,7 @@ public class Member : Entity
     [Required]
     public DateTime DateOfBirth { get; set; }
 
-    public int Age => CalculateAge();
-
-    [Required]
-    public MembershipStatus? Status { get; set; } // "Active", "Inactive", "Suspended"
+    public int Age { get; set; }
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
@@ -21,8 +18,12 @@ public class Member : Entity
     public string? EmployerId { get; set; }
     public Employer? Employer { get; set; }
 
+
     // Navigation Property
     public ApplicationUser? User { get; set; }
+
+
+
 
     // Business Rule: Age must be between 18 and 70
     private int CalculateAge()

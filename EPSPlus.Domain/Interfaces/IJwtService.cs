@@ -1,7 +1,6 @@
-﻿
-using EPSPlus.Domain.Entities;
+﻿using EPSPlus.Domain.Entities;
 
-namespace EPSPlus.Domain.IServices;
+namespace EPSPlus.Domain.Interfaces;
 
 public interface IJwtService
 {

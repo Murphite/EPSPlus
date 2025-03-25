@@ -1,6 +1,6 @@
 ﻿
 
-namespace EPSPlus.Domain.IRepositories;
+namespace EPSPlus.Domain.Interfaces;
 
 public interface ITransactionRepository
 {

@@ -14,6 +14,7 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
     }
 
     public DbSet<Member> Members { get; set; }
+    public DbSet<Admin> Admins { get; set; }
     public DbSet<Employer> Employers { get; set; }
     public DbSet<Transaction> Transactions { get; set; }
     public DbSet<Contribution> Contributions { get; set; }

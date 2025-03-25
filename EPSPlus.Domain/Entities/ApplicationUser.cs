@@ -11,6 +11,7 @@ public class ApplicationUser : IdentityUser
     public new string? PhoneNumber { get; set; }
     public UserType UserType { get; set; } // "Member" or "Employer"
     public DateTime CreatedAt { get; set; }
+    public bool IsActive { get; set; } = true;
 
     // Navigation properties 
     public Member? MemberDetails { get; set; }

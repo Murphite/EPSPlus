@@ -1,6 +1,7 @@
 
 using EPSPlus.API.Presentation.Extensions;
 using EPSPlus.API.Presentation.Middlewares;
+using EPSPlus.Infrastructure.DbInitializer;
 using Microsoft.OpenApi.Models;
 using Serilog;
 using System.Text.Json.Serialization;
@@ -79,6 +80,15 @@ app.UseMiddleware<ExceptionMiddleware>();
 
 app.MapControllers();
 
-//await Seeder.Run(app);
+SeedDatabase();
 
 app.Run();
+
+void SeedDatabase()
+{
+    using (var scope = app.Services.CreateScope())
+    {
+        var dbInitializer = scope.ServiceProvider.GetRequiredService<IDbInitializer>();
+        dbInitializer.Initialize();
+    }
+}

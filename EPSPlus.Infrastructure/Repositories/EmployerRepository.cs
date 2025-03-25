@@ -1,5 +1,5 @@
 ﻿using EPSPlus.Domain.Entities;
-using EPSPlus.Domain.IRepositories;
+using EPSPlus.Domain.Interfaces;
 using EPSPlus.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
@@ -16,16 +16,11 @@ public class EmployerRepository : IEmployerRepository
         _context = context;
     }
 
-    public async Task<Employer> RegisterEmployerAsync(Employer employer)
-    {
-        if (string.IsNullOrWhiteSpace(employer.RegistrationNumber))
-            throw new ValidationException("Employer must have a valid registration number.");
-
-        if (!employer.ActiveStatus)
-            throw new ValidationException("Employer must be active.");
-
+    public async Task<Employer> AddEmployerAsync(Employer employer)
+    {        
         _context.Employers.Add(employer);
         await _context.SaveChangesAsync();
+
         return employer;
     }
 
@@ -40,5 +35,25 @@ public class EmployerRepository : IEmployerRepository
     {
         _context.Employers.Update(employer);
         await _context.SaveChangesAsync();
+    }
+
+    public async Task<bool> IsFullNameUniqueAsync(string name)
+    {
+        return !await _context.Users.AnyAsync(u => u.FullName == name);
+    }
+
+    public async Task<bool> IsEmailUniqueAsync(string email)
+    {
+        return !await _context.Users.AnyAsync(u => u.Email == email);
+    }
+
+    public async Task<bool> IsPhoneUniqueAsync(string phone)
+    {
+        return !await _context.Users.AnyAsync(u => u.PhoneNumber == phone);
+    }
+
+    public async Task<bool> IsRegistrationNumberUniqueAsync(string registrationNumber)
+    {
+        return !await _context.Employers.AnyAsync(u => u.RegistrationNumber == registrationNumber);
     }
 }

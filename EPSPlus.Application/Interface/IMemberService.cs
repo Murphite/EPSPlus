@@ -1,12 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿
 
-namespace EPSPlus.Application.Interface
+using EPSPlus.Application.DTOs;
+using EPSPlus.Domain.Responses;
+
+namespace EPSPlus.Application.Interface;
+
+public interface IMemberService
 {
-    internal interface IMemberService
-    {
-    }
+    //Task<ServerResponse<MemberDto>> RegisterMemberAsync(MemberDto memberDto);
+    Task<ServerResponse<MemberDto>> GetMemberByIdAsync(string memberId);
+    Task<ServerResponse<MemberDto>> UpdateMemberAsync(MemberDto memberDto);
+    Task<ServerResponse<string>> SoftDeleteMemberAsync(string memberId);
 }

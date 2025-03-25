@@ -1,6 +1,6 @@
 ﻿using EPSPlus.Domain.Entities;
 using EPSPlus.Domain.Enum;
-using EPSPlus.Domain.IRepositories;
+using EPSPlus.Domain.Interfaces;
 using EPSPlus.Infrastructure.Persistence;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
@@ -17,17 +17,8 @@ public class MemberRepository : IMemberRepository
         _context = context;
     }
 
-    public async Task<Member> RegisterMemberAsync(Member member)
+    public async Task<Member> AddMemberAsync(Member member)
     {
-        if (await IsEmailUniqueAsync(member.User!.Email!) == false)
-            throw new ValidationException("Email is already in use.");
-
-        if (await IsPhoneUniqueAsync(member.User!.PhoneNumber!) == false)
-            throw new ValidationException("Phone number is already in use.");
-
-        if (member.Age < 18 || member.Age > 70)
-            throw new ValidationException("Member must be between 18 and 70 years old.");
-
         _context.Members.Add(member);
         await _context.SaveChangesAsync();
         return member;
@@ -47,16 +38,6 @@ public class MemberRepository : IMemberRepository
         await _context.SaveChangesAsync();
     }
 
-    public async Task SoftDeleteMemberAsync(string memberId)
-    {
-        var member = await GetMemberByIdAsync(memberId);
-        if (member != null)
-        {
-            member.Status = MembershipStatus.Inactive;
-            await _context.SaveChangesAsync();
-        }
-    }
-
     public async Task<bool> IsEmailUniqueAsync(string email)
     {
         return !await _context.Users.AnyAsync(u => u.Email == email);
@@ -65,6 +46,11 @@ public class MemberRepository : IMemberRepository
     public async Task<bool> IsPhoneUniqueAsync(string phone)
     {
         return !await _context.Users.AnyAsync(u => u.PhoneNumber == phone);
+    }
+
+    public async Task<bool> IsFullNameUniqueAsync(string name)
+    {
+        return !await _context.Users.AnyAsync(u => u.FullName == name);
     }
 }
 

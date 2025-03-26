@@ -18,51 +18,7 @@ public class EmployerService : IEmployerService
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<ServerResponse<EmployerDto>> RegisterEmployerAsync(EmployerDto employerDto)
-    {
-        if (string.IsNullOrWhiteSpace(employerDto.RegistrationNumber))
-        {
-            return ServerResponseExtensions.Failure<EmployerDto>(new ErrorResponse
-            {
-                ResponseCode = "400",
-                ResponseMessage = "Invalid Registration Number",
-                ResponseDescription = "Employer must have a valid registration number."
-            }, 400);
-        }
-
-        if (!employerDto.ActiveStatus)
-        {
-            return ServerResponseExtensions.Failure<EmployerDto>(new ErrorResponse
-            {
-                ResponseCode = "400",
-                ResponseMessage = "Inactive Employer",
-                ResponseDescription = "Employer must be active."
-            }, 400);
-        }
-
-        var employer = new Employer
-        {
-            Id = Guid.NewGuid().ToString(),
-            CompanyName = employerDto.CompanyName,
-            RegistrationNumber = employerDto.RegistrationNumber
-        };
-
-        var registeredEmployer = await _unitOfWork.Employers.AddEmployerAsync(employer);
-
-        return new ServerResponse<EmployerDto>
-        {
-            IsSuccessful = true,
-            ResponseCode = "201",
-            ResponseMessage = "Employer registered successfully.",
-            Data = new EmployerDto
-            {
-                Id = registeredEmployer.Id,
-                CompanyName = registeredEmployer.CompanyName,
-                RegistrationNumber = registeredEmployer.RegistrationNumber
-            }
-        };
-    }
-
+    
     public async Task<ServerResponse<EmployerDto>> GetEmployerByIdAsync(string employerId)
     {
         var employer = await _unitOfWork.Employers.GetEmployerByIdAsync(employerId);

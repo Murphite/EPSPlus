@@ -50,7 +50,6 @@ public class RegisterMemberDto
     [Required]
     [Phone]
     public string PhoneNumber { get; set; } = string.Empty;
-    public string CompanyName { get; set; } = string.Empty;
     public DateTime DateOfBirth { get; set; }
 
     [Range(18, 70, ErrorMessage = "Member must be between 18 and 70 years old.")]
@@ -83,7 +82,6 @@ public class RegisterEmployerDto
     [Required]
     public string CompanyName { get; set; } = string.Empty;
     public string Email { get; set; } = string.Empty;
-    public string PhoneNumber { get; set; } = string.Empty;
 
     [Required]
     public string RegistrationNumber { get; set; } = string.Empty;

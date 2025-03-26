@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace EPSPlus.API.Presentation.Controllers;
 
+[ApiController]
+[Route("api/[controller]")]
 public class AuthController : Controller
 {
     private readonly IAuthService _authService;
@@ -44,7 +46,7 @@ public class AuthController : Controller
         return Ok(response);
     }
 
-    [HttpPost("reset-password/{email}")]
+    [HttpPost("reset-password")]
     public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto resetPasswordDto, string email)
     {
         var response = await _authService.ResetPassword(resetPasswordDto, email);

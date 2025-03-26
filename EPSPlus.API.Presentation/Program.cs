@@ -80,15 +80,7 @@ app.UseMiddleware<ExceptionMiddleware>();
 
 app.MapControllers();
 
-SeedDatabase();
+await DbInitializer.Run(app);
 
 app.Run();
 
-void SeedDatabase()
-{
-    using (var scope = app.Services.CreateScope())
-    {
-        var dbInitializer = scope.ServiceProvider.GetRequiredService<IDbInitializer>();
-        dbInitializer.Initialize();
-    }
-}

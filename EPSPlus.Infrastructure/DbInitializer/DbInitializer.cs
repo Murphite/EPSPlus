@@ -60,31 +60,40 @@ public class DbInitializer
 
         // Check if the Admin user already exists
         var existingAdmin = await userManager.FindByEmailAsync("ogbeidemurphy@gmail.com");
+
         if (existingAdmin == null)
         {
             var adminUser = new ApplicationUser
             {
+                Id = "admin1",
                 FullName = "Murphy Admin",
                 Email = "ogbeidemurphy@gmail.com",
                 UserName = "ogbeidemurphy@gmail.com",
                 PhoneNumber = "080123456789",
-                UserType = "Admin"
+                UserType = "Admin",
+                CreatedAt = DateTime.Now
             };
 
             var createResult = await userManager.CreateAsync(adminUser, "Admin@123");
 
             if (createResult.Succeeded)
             {
-                await userManager.AddToRoleAsync(adminUser, RolesConstant.Admin);
+                // Ensure the user is added before inserting into Admins
+                var newAdminUser = await userManager.FindByEmailAsync("ogbeidemurphy@gmail.com");
 
-                var admin = new Admin
+                if (newAdminUser != null)
                 {
-                    UserId = adminUser.Id,
-                    CreatedAt = DateTime.UtcNow
-                };
+                    await userManager.AddToRoleAsync(newAdminUser, RolesConstant.Admin);
 
-                await dbContext.Admins.AddAsync(admin);
-                await dbContext.SaveChangesAsync();
+                    var admin = new Admin
+                    {
+                        UserId = newAdminUser.Id,  // Ensure this ID exists before inserting
+                        CreatedAt = DateTime.UtcNow
+                    };
+
+                    await dbContext.Admins.AddAsync(admin);
+                    await dbContext.SaveChangesAsync();
+                }
             }
             else
             {

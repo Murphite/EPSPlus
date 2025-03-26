@@ -21,21 +21,20 @@ public class Member : Entity
 
     // Navigation Property
     public ApplicationUser? User { get; set; }
-
-
-
-
-    // Business Rule: Age must be between 18 and 70
-    private int CalculateAge()
-    {
-        var today = DateTime.Today;
-        var age = today.Year - DateOfBirth.Year;
-        if (DateOfBirth.Date > today.AddYears(-age)) age--;
-
-        if (age < 18 || age > 70)
-            throw new ValidationException("Member's age must be between 18 and 70 years.");
-
-        return age;
-    }
+    public BenefitEligibility? BenefitEligibility { get; set; }
+    public ICollection<Contribution>? Contributions { get; set; }
 }
 
+
+// Business Rule: Age must be between 18 and 70
+//private int CalculateAge()
+//{
+//    var today = DateTime.Today;
+//    var age = today.Year - DateOfBirth.Year;
+//    if (DateOfBirth.Date > today.AddYears(-age)) age--;
+
+//    if (age < 18 || age > 70)
+//        throw new ValidationException("Member's age must be between 18 and 70 years.");
+
+//    return age;
+//}

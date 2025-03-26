@@ -3,6 +3,7 @@ using EPSPlus.Application.Interface;
 using EPSPlus.Domain.Interfaces;
 using EPSPlus.Infrastructure.Persistence;
 using EPSPlus.Infrastructure.Repositories;
+using EPSPlus.Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -88,15 +89,20 @@ public static class ServiceRegistration
         });
 
         // Register Application Services
-        //services.AddScoped<IContributionService, ContributionService>();
-        //services.AddScoped<IEmployerService, EmployerService>();
-        //services.AddScoped<IMemberService, MemberService>();
+        services.AddScoped<IContributionService, ContributionService>();
+        services.AddScoped<IEmployerService, EmployerService>();
+        services.AddScoped<IMemberService, MemberService>();
+        services.AddScoped<ITransactionService, TransactionService>();
+        services.AddScoped<IAuthService, AuthService>();
 
         // Register Repositories
         services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddScoped<IJwtService, JwtService>();
+        services.AddScoped<IRepository, Repository>();
         services.AddScoped<IContributionRepository, ContributionRepository>();
         services.AddScoped<IEmployerRepository, EmployerRepository>();
         services.AddScoped<IMemberRepository, MemberRepository>();
+        services.AddScoped<ITransactionRepository, TransactionRepository>();
 
         //other services
         services.AddHttpContextAccessor();

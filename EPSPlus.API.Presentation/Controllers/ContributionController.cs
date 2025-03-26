@@ -1,9 +1,13 @@
 ﻿using EPSPlus.Application.DTOs;
 using EPSPlus.Application.Interface;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace EPSPlus.API.Presentation.Controllers;
 
+[ApiController]
+[Authorize]
+[Route("api/[controller]")]
 public class ContributionController : Controller
 {
     private readonly IContributionService _contributionService;
@@ -47,6 +51,16 @@ public class ContributionController : Controller
     public async Task<IActionResult> GetContributionStatement(string memberId)
     {
         var response = await _contributionService.GetContributionStatementAsync(memberId);
+        if (!response.IsSuccessful)
+            return NotFound(response);
+
+        return Ok(response);
+    }
+
+    [HttpGet("check-benefit-eligibility/{memberId}")]
+    public async Task<IActionResult> CheckBenefitEligibility(string memberId)
+    {
+        var response = await _contributionService.CheckBenefitEligibilityAsync(memberId);
         if (!response.IsSuccessful)
             return NotFound(response);
 

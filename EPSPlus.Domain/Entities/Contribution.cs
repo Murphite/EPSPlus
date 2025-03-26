@@ -22,13 +22,16 @@ public class Contribution : Entity
 
     public string? Status { get; set; }
 
-    // Business Rule: Contribution Date must be valid (not in the future)
-    public void ValidateContributionDate()
-    {
-        if (ContributionDate > DateTime.UtcNow)
-        {
-            throw new ValidationException("Contribution date cannot be in the future.");
-        }
-    }
+    // Navigation Property
+    public Member? Member { get; set; }
+    public ICollection<Transaction>? Transactions { get; set; }
 }
 
+// Business Rule: Contribution Date must be valid (not in the future)
+//public void ValidateContributionDate()
+//{
+//    if (ContributionDate > DateTime.UtcNow)
+//    {
+//        throw new ValidationException("Contribution date cannot be in the future.");
+//    }
+//}

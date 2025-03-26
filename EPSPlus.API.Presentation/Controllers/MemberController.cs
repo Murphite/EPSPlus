@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace EPSPlus.API.Presentation.Controllers;
 
 [ApiController]
-//[Authorize]
+[Authorize]
 [Route("api/[controller]")]
 public class MemberController : ControllerBase
 {

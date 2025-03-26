@@ -390,16 +390,6 @@ public class AuthService : IAuthService
             }, 400);
         }
 
-        if (!await _unitOfWork.Employers.IsPhoneUniqueAsync(employerDto.PhoneNumber))
-        {
-            return ServerResponseExtensions.Failure<RegisterEmployerResponseDto>(new ErrorResponse
-            {
-                ResponseCode = "400",
-                ResponseMessage = "Duplicate Phone Number",
-                ResponseDescription = "Phone number is already in use."
-            }, 400);
-        }
-
         using (var transaction = await _unitOfWork.Repository.BeginTransactionAsync())
         {
             try
@@ -410,7 +400,6 @@ public class AuthService : IAuthService
                     UserName = employerDto.Email,
                     UserType = "Employer",
                     Email = employerDto.Email,
-                    PhoneNumber = employerDto.PhoneNumber,
                     CreatedAt = DateTime.Now,
                     IsActive = true,
                 };

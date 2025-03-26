@@ -11,12 +11,10 @@ namespace EPSPlus.Infrastructure.Repositories
     public class ContributionRepository : IContributionRepository
     {
         private readonly AppDbContext _context;
-        private readonly IUnitOfWork _unitOfWork;
 
-        public ContributionRepository(AppDbContext context, IUnitOfWork unitOfWork)
+        public ContributionRepository(AppDbContext context)
         {
             _context = context;
-            _unitOfWork = unitOfWork;
         }
 
         public async Task AddMonthlyContributionAsync(Contribution contribution)
@@ -25,7 +23,7 @@ namespace EPSPlus.Infrastructure.Repositories
             await ValidateContribution(contribution);
 
             _context.Contributions.Add(contribution);
-            await _unitOfWork.SaveChangesAsync(); // ✅ Use UnitOfWork
+            await _context.SaveChangesAsync(); ; 
         }
 
         public async Task AddVoluntaryContributionAsync(Contribution contribution)
@@ -34,7 +32,7 @@ namespace EPSPlus.Infrastructure.Repositories
             await ValidateContribution(contribution);
 
             _context.Contributions.Add(contribution);
-            await _unitOfWork.SaveChangesAsync(); // ✅ Use UnitOfWork
+            await _context.SaveChangesAsync();
         }
 
         public async Task<IEnumerable<Contribution>> GetContributionsByMemberIdAsync(string memberId)
@@ -56,6 +54,25 @@ namespace EPSPlus.Infrastructure.Repositories
                 Contributions = contributions.ToList()
             };
         }
+
+        public async Task<Contribution?> GetMonthlyContributionAsync(string memberId, DateTime contributionDate)
+        {
+            return await _context.Contributions
+                .Where(c => c.MemberId == memberId
+                            && c.ContributionType == ContributionStatus.Monthly
+                            && c.ContributionDate.Year == contributionDate.Year
+                            && c.ContributionDate.Month == contributionDate.Month)
+                .FirstOrDefaultAsync();
+        }
+
+
+        public async Task<List<Contribution>> GetMonthlyContributionAsync(string memberId)
+        {
+            return await _context.Contributions
+                .Where(c => c.MemberId == memberId && c.ContributionType == ContributionStatus.Monthly)
+                .ToListAsync();
+        }
+
 
         private async Task ValidateContribution(Contribution contribution)
         {

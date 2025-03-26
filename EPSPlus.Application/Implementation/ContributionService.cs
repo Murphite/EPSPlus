@@ -29,6 +29,19 @@ public class ContributionService : IContributionService
             }, 400);
         }
 
+        // 🚨 Check if the user already has a monthly contribution for this month
+        var existingMonthlyContribution = await _unitOfWork.Contributions.GetMonthlyContributionAsync(contributionDto.MemberId, contributionDto.ContributionDate);
+
+        if (existingMonthlyContribution != null)
+        {
+            return ServerResponseExtensions.Failure<string>(new ErrorResponse
+            {
+                ResponseCode = "400",
+                ResponseMessage = "Duplicate Monthly Contribution",
+                ResponseDescription = "A monthly contribution has already been made for this period."
+            }, 400);
+        }
+
         var contribution = new Contribution
         {
             MemberId = contributionDto.MemberId,
@@ -48,6 +61,7 @@ public class ContributionService : IContributionService
             Data = "Success"
         };
     }
+
 
     public async Task<ServerResponse<string>> AddVoluntaryContributionAsync(ContributionDto contributionDto)
     {
@@ -81,6 +95,7 @@ public class ContributionService : IContributionService
         };
     }
 
+
     public async Task<ServerResponse<List<ContributionDto>>> GetContributionsByMemberIdAsync(string memberId)
     {
         var contributions = await _unitOfWork.Contributions.GetContributionsByMemberIdAsync(memberId);
@@ -99,7 +114,8 @@ public class ContributionService : IContributionService
         {
             MemberId = c.MemberId,
             Amount = c.Amount,
-            ContributionDate = c.ContributionDate
+            ContributionDate = c.ContributionDate,
+            ContributionType = ContributionStatus.Voluntary.ToString()
         }).ToList();
 
         return new ServerResponse<List<ContributionDto>>
@@ -113,9 +129,9 @@ public class ContributionService : IContributionService
 
     public async Task<ServerResponse<ContributionStatementDto>> GetContributionStatementAsync(string memberId)
     {
-        var statement = await _unitOfWork.Contributions.GenerateContributionStatementAsync(memberId);
+        var contributions = await _unitOfWork.Contributions.GetContributionsByMemberIdAsync(memberId);
 
-        if (statement == null)
+        if (contributions == null || !contributions.Any())
         {
             return ServerResponseExtensions.Failure<ContributionStatementDto>(new ErrorResponse
             {
@@ -125,16 +141,20 @@ public class ContributionService : IContributionService
             }, 404);
         }
 
+        // 🔢 Calculate total contributions
+        decimal totalContributions = contributions.Sum(c => c.Amount);
+
         var statementDto = new ContributionStatementDto
         {
-            MemberId = statement.MemberId,
-            TotalContributions = statement.TotalContributions,
-            Contributions = statement.Contributions.Select(c => new ContributionDto
+            MemberId = memberId,
+            TotalContributions = totalContributions, // ✅ Sum of contributions
+            Contributions = contributions.Select(c => new ContributionDto
             {
                 MemberId = c.MemberId,
                 Amount = c.Amount,
-                ContributionDate = c.ContributionDate
-            }).ToList() // ✅ Convert to List<ContributionDto>
+                ContributionDate = c.ContributionDate,
+                ContributionType = c.ContributionType.ToString()
+            }).ToList()
         };
 
         return new ServerResponse<ContributionStatementDto>
@@ -145,5 +165,48 @@ public class ContributionService : IContributionService
             Data = statementDto
         };
     }
+
+    public async Task<ServerResponse<bool>> CheckBenefitEligibilityAsync(string memberId)
+    {
+        var contributions = await _unitOfWork.Contributions.GetContributionsByMemberIdAsync(memberId);
+
+        if (contributions == null || !contributions.Any())
+        {
+            return ServerResponseExtensions.Failure<bool>(new ErrorResponse
+            {
+                ResponseCode = "404",
+                ResponseMessage = "No Contributions Found",
+                ResponseDescription = "The member has not made any contributions."
+            }, 404);
+        }
+
+        // ✅ Business Rule: Check if the member has contributed for at least 12 months
+        var uniqueContributionMonths = contributions
+            .Where(c => c.ContributionType == ContributionStatus.Monthly)
+            .Select(c => new { c.ContributionDate.Year, c.ContributionDate.Month })
+            .Distinct()
+            .Count();
+
+        bool isEligible = uniqueContributionMonths >= 12;
+
+        if (!isEligible)
+        {
+            return ServerResponseExtensions.Failure<bool>(new ErrorResponse
+            {
+                ResponseCode = "403",
+                ResponseMessage = "Not Eligible",
+                ResponseDescription = "The member has not met the minimum contribution period required for benefit eligibility."
+            }, 403);
+        }
+
+        return new ServerResponse<bool>
+        {
+            IsSuccessful = true,
+            ResponseCode = "200",
+            ResponseMessage = "Member is eligible for benefits.",
+            Data = true
+        };
+    }
+
 
 }

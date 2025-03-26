@@ -10,4 +10,7 @@ public class Transaction : Entity
     public TransactionStatus? Status { get; set; } // "Success", "Failed", "Pending"
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
+
+    public Contribution? Contribution { get; set; }
+
 }

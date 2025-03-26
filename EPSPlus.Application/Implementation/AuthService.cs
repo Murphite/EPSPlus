@@ -257,7 +257,7 @@ public class AuthService : IAuthService
                 {
                     FullName = registerMemberDto.FullName,
                     UserName = registerMemberDto.Email,
-                    UserType = UserType.Member,
+                    UserType = "Member",
                     Email = registerMemberDto.Email,
                     PhoneNumber = registerMemberDto.PhoneNumber,
                     CreatedAt = DateTime.Now,
@@ -408,7 +408,7 @@ public class AuthService : IAuthService
                 {
                     FullName = employerDto.CompanyName,
                     UserName = employerDto.Email,
-                    UserType = UserType.Employer,
+                    UserType = "Employer",
                     Email = employerDto.Email,
                     PhoneNumber = employerDto.PhoneNumber,
                     CreatedAt = DateTime.Now,

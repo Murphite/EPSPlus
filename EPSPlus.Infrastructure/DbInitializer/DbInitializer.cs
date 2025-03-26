@@ -67,7 +67,8 @@ public class DbInitializer
                 FullName = "Murphy Admin",
                 Email = "ogbeidemurphy@gmail.com",
                 UserName = "ogbeidemurphy@gmail.com",
-                PhoneNumber = "080123456789"
+                PhoneNumber = "080123456789",
+                UserType = "Admin"
             };
 
             var createResult = await userManager.CreateAsync(adminUser, "Admin@123");
@@ -78,7 +79,7 @@ public class DbInitializer
 
                 var admin = new Admin
                 {
-                    ApplicationUserId = adminUser.Id,
+                    UserId = adminUser.Id,
                     CreatedAt = DateTime.UtcNow
                 };
 

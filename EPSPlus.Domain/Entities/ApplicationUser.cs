@@ -9,11 +9,12 @@ public class ApplicationUser : IdentityUser
 {
     public string? FullName { get; set; }
     public new string? PhoneNumber { get; set; }
-    public UserType UserType { get; set; } // "Member" or "Employer"
+    public string UserType { get; set; } // "Member" or "Employer" or Admin
     public DateTime CreatedAt { get; set; }
     public bool IsActive { get; set; } = true;
 
     // Navigation properties 
     public Member? MemberDetails { get; set; }
     public Employer? EmployerDetails { get; set; }
+    public Admin? AdminDetails { get; set; }
 }

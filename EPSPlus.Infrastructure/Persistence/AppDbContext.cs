@@ -35,6 +35,11 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
             .WithOne(e => e.User)
             .HasForeignKey<Employer>(e => e.UserId);
 
+        modelBuilder.Entity<ApplicationUser>()
+            .HasOne(a => a.AdminDetails)
+            .WithOne(e => e.User)
+            .HasForeignKey<Admin>(e => e.UserId);
+
         modelBuilder.Entity<Employer>()
             .HasMany(e => e.Members)
             .WithOne(m => m.Employer)

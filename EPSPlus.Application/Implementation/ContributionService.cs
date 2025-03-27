@@ -5,6 +5,8 @@ using EPSPlus.Domain.Entities;
 using EPSPlus.Domain.Enum;
 using EPSPlus.Domain.Interfaces;
 using EPSPlus.Domain.Responses;
+using EPSPlus.Infrastructure.Repositories;
+using System.ComponentModel.DataAnnotations;
 
 namespace EPSPlus.Application.Implementation;
 
@@ -47,7 +49,8 @@ public class ContributionService : IContributionService
             MemberId = contributionDto.MemberId,
             Amount = contributionDto.Amount,
             ContributionDate = contributionDto.ContributionDate,
-            ContributionType = ContributionStatus.Monthly
+            ContributionType = ContributionStatus.Monthly,
+            Status = "Confirmed"
         };
 
         await _unitOfWork.Contributions.AddMonthlyContributionAsync(contribution);
@@ -61,7 +64,6 @@ public class ContributionService : IContributionService
             Data = "Success"
         };
     }
-
 
     public async Task<ServerResponse<string>> AddVoluntaryContributionAsync(ContributionDto contributionDto)
     {
@@ -80,7 +82,8 @@ public class ContributionService : IContributionService
             MemberId = contributionDto.MemberId,
             Amount = contributionDto.Amount,
             ContributionDate = contributionDto.ContributionDate,
-            ContributionType = ContributionStatus.Voluntary
+            ContributionType = ContributionStatus.Voluntary,
+            Status = "Confirmed"
         };
 
         await _unitOfWork.Contributions.AddVoluntaryContributionAsync(contribution);
@@ -95,14 +98,13 @@ public class ContributionService : IContributionService
         };
     }
 
-
-    public async Task<ServerResponse<List<ContributionDto>>> GetContributionsByMemberIdAsync(string memberId)
+    public async Task<ServerResponse<List<GetContributionDto>>> GetContributionsByMemberIdAsync(string memberId)
     {
         var contributions = await _unitOfWork.Contributions.GetContributionsByMemberIdAsync(memberId);
 
         if (contributions == null || !contributions.Any())
         {
-            return ServerResponseExtensions.Failure<List<ContributionDto>>(new ErrorResponse
+            return ServerResponseExtensions.Failure<List<GetContributionDto>>(new ErrorResponse
             {
                 ResponseCode = "404",
                 ResponseMessage = "No Contributions Found",
@@ -110,15 +112,15 @@ public class ContributionService : IContributionService
             }, 404);
         }
 
-        var contributionsDto = contributions.Select(c => new ContributionDto
+        var contributionsDto = contributions.Select(c => new GetContributionDto
         {
             MemberId = c.MemberId,
             Amount = c.Amount,
             ContributionDate = c.ContributionDate,
-            ContributionType = ContributionStatus.Voluntary.ToString()
+            ContributionType = c.ContributionType.ToString()
         }).ToList();
 
-        return new ServerResponse<List<ContributionDto>>
+        return new ServerResponse<List<GetContributionDto>>
         {
             IsSuccessful = true,
             ResponseCode = "200",
@@ -207,6 +209,51 @@ public class ContributionService : IContributionService
             Data = true
         };
     }
+
+    public async Task<List<Member>> GetAllMembersWithContributionsAsync()
+    {
+        return await _unitOfWork.Contributions.GetAllContributingMembersAsync();
+    }
+
+    public async Task<ServerResponse<List<Contribution>>> ValidateMemberContributionsAsync(string memberId)
+    {
+        var contributions = await _unitOfWork.Contributions.GetMemberContributionsAsync(memberId);
+
+        if (contributions == null || !contributions.Any())
+        {
+            return ServerResponseExtensions.Failure<List<Contribution>>(
+                new ErrorResponse
+                {
+                    ResponseCode = "404",
+                    ResponseMessage = "No contributions found for this member."
+                },
+                404
+            );
+        }
+                
+        var isValid = contributions.Sum(c => c.Amount) > 0; 
+
+        if (!isValid)
+        {
+            return ServerResponseExtensions.Failure<List<Contribution>>(
+                new ErrorResponse
+                {
+                    ResponseCode = "400",
+                    ResponseMessage = "Insufficient contributions."
+                },
+                400
+            );
+        }
+
+        return new ServerResponse<List<Contribution>>
+        {
+            IsSuccessful = true,
+            ResponseCode = "200",
+            ResponseMessage = "Valid contributions.",
+            Data = contributions
+        };
+    }
+
 
 
 }

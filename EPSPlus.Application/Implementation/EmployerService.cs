@@ -40,10 +40,11 @@ public class EmployerService : IEmployerService
             RegistrationNumber = employer.RegistrationNumber,
             Members = employer.Members?.Select(m => new MemberDto
             {
-                FullName = m.User.FullName,
-                Email = m.User.Email,
-                PhoneNumber = m.User.PhoneNumber
-            }).ToList()
+                FullName = m.User != null ? m.User.FullName : "N/A",
+                Email = m.User != null ? m.User.Email : "N/A",
+                PhoneNumber = m.User != null ? m.User.PhoneNumber : "N/A"
+            }).ToList() ?? new List<MemberDto>()
+
         };
 
         return new ServerResponse<EmployerDto>

@@ -8,11 +8,27 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
+using Hangfire;
+
 
 namespace EPSPlus.API.Presentation.Extensions;
 
 public static class ServiceRegistration
 {
+    public static IServiceCollection AddCustomHangfire(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddHangfire(config =>
+        {
+            config.UseSimpleAssemblyNameTypeSerializer()
+                  .UseRecommendedSerializerSettings()
+                  .UseSqlServerStorage(configuration.GetConnectionString("DefaultConnection"));
+        });
+
+        services.AddHangfireServer();
+
+        return services;  // ✅ Make sure to return IServiceCollection
+    }
+
     public static void AddServices(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddSwaggerGen(options =>
@@ -41,7 +57,7 @@ public static class ServiceRegistration
                 }
             });
         });
-
+                           
         services.AddAuthentication(options =>
         {
             options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -90,6 +106,7 @@ public static class ServiceRegistration
 
         // Register Application Services
         services.AddScoped<IContributionService, ContributionService>();
+        services.AddScoped<IContributionJobService, ContributionJobService>();
         services.AddScoped<IEmployerService, EmployerService>();
         services.AddScoped<IMemberService, MemberService>();
         services.AddScoped<ITransactionService, TransactionService>();

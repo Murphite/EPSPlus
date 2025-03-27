@@ -139,9 +139,22 @@ public class AuthService : IAuthService
 
     public async Task<ServerResponse<PasswordResetResponseDto>> ResetPassword(ResetPasswordDto resetPasswordDto, string email)
     {
-        _logger.LogInformation("******* Inside the ResetAdminPassword Method ********");
+        _logger.LogInformation("******* Inside the ResetPassword Method ********");
 
         var user = await _userManager.FindByEmailAsync(email);
+        if (user == null)
+        {
+            return new ServerResponse<PasswordResetResponseDto>
+            {
+                IsSuccessful = false,
+                ErrorResponse = new ErrorResponse
+                {
+                    ResponseCode = "404",
+                    ResponseMessage = "Auth.UserNotFound",
+                    ResponseDescription = "User with the given email does not exist."
+                }
+            };
+        }
 
         // Step 2: Ensure password and confirm password match
         if (resetPasswordDto.NewPassword != resetPasswordDto.ConfirmPassword)
@@ -152,25 +165,29 @@ public class AuthService : IAuthService
                 ErrorResponse = new ErrorResponse
                 {
                     ResponseCode = "400",
-                    ResponseMessage = "Auth.Error",
-                    ResponseDescription = "Passwords do not match"
+                    ResponseMessage = "Auth.PasswordMismatch",
+                    ResponseDescription = "Passwords do not match."
                 }
             };
         }
 
         // Step 3: Generate a password reset token and reset the password
         var resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
-        var resetPasswordResult = await _userManager.ResetPasswordAsync(user, resetToken, resetPasswordDto.NewPassword!);
+        var resetPasswordResult = await _userManager.ResetPasswordAsync(user, resetToken, resetPasswordDto.NewPassword);
+
         if (!resetPasswordResult.Succeeded)
         {
+            // 🔍 Extracting detailed errors from IdentityResult
+            var errors = resetPasswordResult.Errors.Select(e => e.Description).ToList();
+
             return new ServerResponse<PasswordResetResponseDto>
             {
                 IsSuccessful = false,
                 ErrorResponse = new ErrorResponse
                 {
-                    ResponseCode = "500",
-                    ResponseMessage = "Auth.Error",
-                    ResponseDescription = "Error occurred while resetting the password"
+                    ResponseCode = "400",  // Bad request
+                    ResponseMessage = "Auth.PasswordValidationFailed",
+                    ResponseDescription = string.Join(" | ", errors) // Joining multiple errors
                 }
             };
         }
@@ -187,11 +204,12 @@ public class AuthService : IAuthService
         return new ServerResponse<PasswordResetResponseDto>
         {
             IsSuccessful = true,
-            ResponseCode = "00",
-            ResponseMessage = "Admin password reset successful",
+            ResponseCode = "200",
+            ResponseMessage = "Password reset successful",
             Data = passwordResetResponse
         };
     }
+
 
     public async Task<ServerResponse<RegisterMemberResponseDto>> RegisterMemberAsync(RegisterMemberDto registerMemberDto)
     {

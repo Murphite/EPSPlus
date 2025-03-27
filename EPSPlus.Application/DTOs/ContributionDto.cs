@@ -16,7 +16,20 @@ public class ContributionDto
     [Required]
     public DateTime ContributionDate { get; set; }
     public string? ContributionType { get; set; }
+}
 
+public class GetContributionDto
+{
+    [Required]
+    public string MemberId { get; set; } = string.Empty;
+
+    [Range(1, double.MaxValue, ErrorMessage = "Amount must be greater than zero.")]
+    public decimal Amount { get; set; }
+
+    [Required]
+    public DateTime ContributionDate { get; set; }
+    public string? ContributionType { get; set; }
+    public string? Status { get; set; }
 }
 
 public class ContributionStatementDto

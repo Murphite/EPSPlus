@@ -56,14 +56,4 @@ public class ContributionController : Controller
 
         return Ok(response);
     }
-
-    [HttpGet("check-benefit-eligibility/{memberId}")]
-    public async Task<IActionResult> CheckBenefitEligibility(string memberId)
-    {
-        var response = await _contributionService.CheckBenefitEligibilityAsync(memberId);
-        if (!response.IsSuccessful)
-            return NotFound(response);
-
-        return Ok(response);
-    }
 }

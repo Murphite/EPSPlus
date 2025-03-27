@@ -13,5 +13,7 @@ public interface IContributionRepository
     Task<ContributionStatement> GenerateContributionStatementAsync(string memberId);
     Task<List<Contribution>> GetMonthlyContributionAsync(string memberId);
     Task<Contribution?> GetMonthlyContributionAsync(string memberId, DateTime contributionDate);
-
+    Task<List<Member>> GetAllContributingMembersAsync();
+    Task<List<Contribution>> GetFailedContributionsAsync();
+    Task<List<Contribution>> GetMemberContributionsAsync(string memberId);
 }

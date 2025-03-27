@@ -2,10 +2,12 @@
 using EPSPlus.API.Presentation.Extensions;
 using EPSPlus.API.Presentation.Middlewares;
 using EPSPlus.Infrastructure.DbInitializer;
+using Hangfire;
 using Microsoft.OpenApi.Models;
 using Serilog;
 using System.Text.Json.Serialization;
-
+using EPSPlus.API.Presentation.Extensions;
+using EPSPlus.Application.Interface;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -37,6 +39,8 @@ builder.Host.UseSerilog((context, services, configuration) =>
                  .WriteTo.File("./logs/log-.txt", rollingInterval: RollingInterval.Day);
 });
 
+builder.Services.AddCustomHangfire(builder.Configuration);
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigins", policy =>
@@ -51,6 +55,7 @@ builder.Services.AddCors(options =>
         .AllowAnyMethod();
     });
 });
+
 
 // Build app
 var app = builder.Build();
@@ -77,6 +82,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseSession();
 app.UseMiddleware<ExceptionMiddleware>();
+app.UseHangfireDashboard();
 
 app.MapControllers();
 

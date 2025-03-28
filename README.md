@@ -1,16 +1,51 @@
-# EPSPlus
+# Pension Contribution Management System (EPS+)
 
-EPSPlus is a robust enterprise payroll system designed to streamline payroll processing, automate tax calculations, and ensure compliance with financial regulations. The system provides an intuitive interface for employers and employees, offering secure payroll management and reporting capabilities.
+## Overview
+
+EPS+ is a robust Pension Contribution Management System designed to streamline customer onboarding, pension contributions, and background processing. Built using .NET Core, Entity Framework, SQL Server, and Hangfire, the system follows Clean Architecture and Domain-Driven Design (DDD) principles to ensure scalability, maintainability, and security.
 
 ## Features
 
-- **Employee Management**: Add, update, and manage employee details.
-- **Payroll Processing**: Automate salary calculations, deductions, and bonuses.
-- **Tax Compliance**: Integrated tax calculation to ensure legal compliance.
-- **Payment Processing**: Supports multiple payment methods, including direct bank deposits.
-- **User Roles & Permissions**: Role-based access control for administrators, HR personnel, and employees.
-- **Reports & Analytics**: Generate payroll summaries, tax reports, and financial insights.
-- **Secure Authentication**: Implements JWT-based authentication for secure access.
+- **Customer Onboarding**: Streamlined registration for members, employers, and administrators.
+- **Pension Contribution Management**: Supports monthly and voluntary contributions with automated processing.
+- **Transaction Handling**: Ensures secure and efficient contribution transactions with status tracking.
+- **Employer Management**: Employers can onboard employees and oversee their contributions.
+- **Benefit Eligibility Assessment**: Automatically determines member eligibility for pension benefits.
+- **Background Processing**: Uses Hangfire for validating contributions, processing failed transactions, and updating benefit eligibility.
+- **User Roles & Permissions**: Role-based access control for administrators, employers, and members.
+- **Reports & Statements**: Generates contribution summaries, benefit eligibility reports, and transaction histories.
+- **Secure Authentication**: Implements JWT-based authentication with role-based authorization.
+- **Logging & Error Handling**: Structured logging using Serilog and robust error-handling mechanisms.
+
+## System Architecture
+
+The system is structured into multiple layers:
+
+- **Presentation Layer:** RESTful API using ASP.NET Core
+- **Application Layer:** Business logic and workflow handling
+- **Domain Layer:** Core business models and domain logic
+- **Infrastructure Layer:** Handles database access, background jobs, and logging
+
+## Entity-Relationship Diagram (ERD)
+
+### Key Entities & Relationships:
+
+- `ApplicationUser` (1 - N) `Member`, `Employer`, `Admin`
+- `Member` (1 - N) `Contributions`
+- `Employer` (1 - N) `Members`
+- `Contribution` (N - 1) `Member`
+- `Transaction` (N - 1) `Contribution`
+- `Benefit Eligibility` (1 - 1) `Member`
+
+## Database Schema
+
+### Main Entities & Attributes:
+
+- **ApplicationUser** (`UserID`, `FullName`, `PhoneNumber`, `CreatedAt`, `UserType`, `IsActive`)
+- **Member** (`MemberID`, `Name`, `DateOfBirth`, `Email`, `Phone`, `Age`, `EmployerID`)
+- **Employer** (`EmployerID`, `CompanyName`, `RegistrationNumber`)
+- **Contribution** (`ContributionID`, `MemberID`, `ContributionType`, `Amount`, `ContributionDate`)
+- **BenefitEligibility** (`EligibilityID`, `MemberID`, `EligibleDate`, `Status`)
 
 ## Installation
 
@@ -41,83 +76,63 @@ EPSPlus is a robust enterprise payroll system designed to streamline payroll pro
    dotnet run
    ```
 
-API Endpoints
+## API Endpoints
 
-Authentication & Authorization
+### Authentication & Authorization
 
-Register Member: POST /api/auth/register/member
+- **Register Member:** `POST /api/auth/register/member`
+- **Register Employer:** `POST /api/auth/register/employer`
+- **Register Admin:** `POST /api/auth/register/admin`
+- **Login:** `POST /api/auth/login`
+- **Reset Password:** `POST /api/auth/reset-password`
 
-Register Employer: POST /api/auth/register/employer
+### Member Management
 
-Register Admin: POST /api/auth/register/admin
+- **Register Member:** `POST /api/members`
+- **Update Member:** `PUT /api/members/{id}`
+- **Retrieve Member:** `GET /api/members/{id}`
+- **Soft Delete Member:** `DELETE /api/members/{id}`
 
-Login: POST /api/auth/login
+### Contribution Processing
 
-Reset Password: POST /api/auth/reset-password
+- **Add Monthly Contribution:** `POST /api/contributions/monthly`
+- **Add Voluntary Contribution:** `POST /api/contributions/voluntary`
+- **Get Contributions:** `GET /api/contributions/member/{id}`
+- **Generate Contribution Statement:** `GET /api/contributions/statement/{id}`
 
-Member Management
+### Employer Management
 
-Register Member: POST /api/members
+- **Register Employer:** `POST /api/employers`
+- **Update Employer:** `PUT /api/employers/{id}`
+- **Retrieve Employer:** `GET /api/employers/{id}`
 
-Update Member: PUT /api/members/{id}
+### Transactions & Background Jobs (Hangfire)
 
-Retrieve Member: GET /api/members/{id}
+- **Validate Contributions** *(Background Job)*
+- **Update Benefit Eligibility** *(Background Job)*
+- **Process Failed Transactions** *(Background Job)*
+- **Send Notifications** *(Background Job)*
 
-Soft Delete Member: DELETE /api/members/{id}
+## Business Rules & Validation
 
-Contribution Processing
+- **Member Validation:** Age must be between 18-70, email & phone must be unique.
+- **Contribution Validation:** Amount must be greater than 0, valid contribution dates required.
+- **Employer Validation:** Must be active and have a valid registration number.
+- **Benefit Eligibility:** Minimum contribution period required before payout eligibility.
 
-Add Monthly Contribution: POST /api/contributions/monthly
+## Error Handling & Logging
 
-Add Voluntary Contribution: POST /api/contributions/voluntary
+- Uses **structured logging** with Serilog.
+- Implements **retry mechanisms** for failed transactions.
+- Provides **clear error messages** and status codes.
 
-Get Contributions: GET /api/contributions/member/{id}
+## Security Considerations
 
-Generate Contribution Statement: GET /api/contributions/statement/{id}
+- Uses **JWT-based authentication & authorization**.
+- Implements **input validation** to prevent SQL Injection & XSS attacks.
+- Stores **secure passwords** using hashing.
 
-Employer Management
 
-Register Employer: POST /api/employers
-
-Update Employer: PUT /api/employers/{id}
-
-Retrieve Employer: GET /api/employers/{id}
-
-Transactions & Background Jobs (Hangfire)
-
-Validate Contributions (Background Job)
-
-Update Benefit Eligibility (Background Job)
-
-Process Failed Transactions (Background Job)
-
-Send Notifications (Background Job)
-
-Business Rules & Validation
-
-Member Validation: Age must be between 18-70, email & phone must be unique.
-
-Contribution Validation: Amount must be greater than 0, valid contribution dates required.
-
-Employer Validation: Must be active and have a valid registration number.
-
-Benefit Eligibility: Minimum contribution period required before payout eligibility.
-
-Error Handling & Logging
-
-Uses structured logging with Serilog.
-
-Implements retry mechanisms for failed transactions.
-
-Provides clear error messages and status codes.
-
-Security Considerations
-
-Uses JWT-based authentication & authorization.
-
-Implements input validation to prevent SQL Injection & XSS attacks.
-
-Stores secure passwords using hashing.
 ## Technologies Used
 
 - **Backend**: .NET 8, C#, Entity Framework Core
@@ -140,4 +155,10 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## Contact
 
 For any questions or support, please contact [ogbeidemurphy@gmail.com](mailto:ogbeidemurphy@gmail.com).
+
+## Conclusion
+
+EPS+ is designed for **scalability, maintainability, and security**, ensuring compliance with pension contribution business rules. With robust **error handling, logging, and background processing**, the system provides reliability and efficiency in managing pension contributions.
+
+
 

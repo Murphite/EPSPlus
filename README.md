@@ -15,14 +15,14 @@ EPSPlus is a robust enterprise payroll system designed to streamline payroll pro
 ## Installation
 
 ### Prerequisites
-- .NET 6.0 or later
+- .NET 8.0 or later
 - SQL Server
 - Entity Framework Core
 
 ### Setup Instructions
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/EPSPlus.git
+   git clone https://github.com/murphite/EPSPlus.git
    ```
 2. Navigate to the project folder:
    ```bash
@@ -71,5 +71,5 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Contact
 
-For any questions or support, please contact [your.email@example.com](mailto:your.email@example.com).
+For any questions or support, please contact [your.email@example.com](mailto:ogbeidemurphy@gmail.com).
 

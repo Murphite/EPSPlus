@@ -52,7 +52,7 @@ EPSPlus is a robust enterprise payroll system designed to streamline payroll pro
 
 ## Technologies Used
 
-- **Backend**: .NET 6, C#, Entity Framework Core
+- **Backend**: .NET 8, C#, Entity Framework Core
 - **Database**: SQL Server
 - **Security**: JWT Authentication
 - **Testing**: xUnit, Moq

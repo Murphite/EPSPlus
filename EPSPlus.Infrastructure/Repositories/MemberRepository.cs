@@ -38,6 +38,14 @@ public class MemberRepository : IMemberRepository
         await _context.SaveChangesAsync();
     }
 
+    public async Task<IEnumerable<Member>> GetAllMembersAsync()
+    {
+        return await _context.Members
+            .Include(m => m.User)
+            .Include(m => m.Employer) // Include Employer if needed
+            .ToListAsync();
+    }
+
     public async Task<bool> IsEmailUniqueAsync(string email)
     {
         return !await _context.Users.AnyAsync(u => u.Email == email);

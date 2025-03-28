@@ -8,14 +8,14 @@ namespace EPSPlus.API.Presentation.Controllers;
 [ApiController]
 [Authorize]
 [Route("api/[controller]")]
-public class ContributionJobController : ControllerBase
+public class BackgroundJobController : ControllerBase
 {
     private readonly IBackgroundJobClient _backgroundJobClient;
     private readonly IRecurringJobManager _recurringJobManager;
     private readonly IContributionJobService _contributionJobService;
     private readonly ILogger<ContributionController> _logger;
 
-    public ContributionJobController(
+    public BackgroundJobController(
         IBackgroundJobClient backgroundJobClient,
         IRecurringJobManager recurringJobManager,
         IContributionJobService contributionJobService,

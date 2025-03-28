@@ -51,9 +51,7 @@ public class RegisterMemberDto
     [Phone]
     public string PhoneNumber { get; set; } = string.Empty;
     public DateTime DateOfBirth { get; set; }
-
-    [Range(18, 70, ErrorMessage = "Member must be between 18 and 70 years old.")]
-    public int Age { get; set; }
+    public string? EmployerId { get; set; }
     [Required(ErrorMessage = "New password is required")]
     [DataType(DataType.Password)]
     public string Password { get; set; } = default!;
@@ -66,7 +64,7 @@ public class RegisterMemberDto
 
 public class RegisterMemberResponseDto
 {
-    public string? UserId { get; set; }
+    public string? Id { get; set; }
     public string? FullName { get; set; }
     public string Email { get; set; } = string.Empty;
     public string PhoneNumber { get; set; } = string.Empty;
@@ -74,6 +72,7 @@ public class RegisterMemberResponseDto
     public DateTime DateOfBirth { get; set; }
     public int Age { get; set; }
     public string? Role { get; set; }
+    public string? EmployerId { get; set; }
     public string? Token { get; set; }
 }
 

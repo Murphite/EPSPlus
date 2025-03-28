@@ -13,5 +13,7 @@ public interface IEmployerRepository
     Task<bool> IsPhoneUniqueAsync(string phone);
     Task<bool> IsRegistrationNumberUniqueAsync(string registrationNumber);
     Task<bool> IsFullNameUniqueAsync(string name);
+    Task<Employer?> GetByIdAsync(string employerId);
+    Task<List<Employer>> GetAllAsync();
 }
 

@@ -24,14 +24,32 @@ public class EmployerRepository : IEmployerRepository
         return employer;
     }
 
+    public async Task<Employer?> GetByIdAsync(string employerId)
+    {
+        return await _context.Employers.FindAsync(employerId);
+    }
+
+    //public async Task<Employer?> GetEmployerByIdAsync(string employerId)
+    //{
+    //    return await _context.Employers
+    //        .Include(e => e.Members) 
+    //        .ThenInclude(m => m.User) 
+    //        .FirstOrDefaultAsync(e => e.Id == employerId);
+    //}
+
     public async Task<Employer> GetEmployerByIdAsync(string employerId)
     {
-        var employers =  await _context.Employers
-            .Include(e => e.Members) 
-            .ThenInclude(m => m.User) 
+        return await _context.Employers
+            .Include(e => e.User)
             .FirstOrDefaultAsync(e => e.Id == employerId);
+    }
 
-        return employers!;
+    public async Task<List<Employer>> GetAllAsync()
+    {
+        return await _context.Employers
+            .Include(e => e.Members)
+            .ThenInclude(m => m.User)
+            .ToListAsync();
     }
 
 

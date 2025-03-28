@@ -213,7 +213,13 @@ public class AuthService : IAuthService
 
     public async Task<ServerResponse<RegisterMemberResponseDto>> RegisterMemberAsync(RegisterMemberDto registerMemberDto)
     {
-        if (registerMemberDto.Age < 18 || registerMemberDto.Age > 70)
+        // Calculate Age from Date of Birth
+        var today = DateTime.Today;
+        var age = today.Year - registerMemberDto.DateOfBirth.Year;
+        if (registerMemberDto.DateOfBirth.Date > today.AddYears(-age)) age--; // Adjust if birthday hasn't occurred this year
+
+        // Age validation
+        if (age < 18 || age > 70)
         {
             return ServerResponseExtensions.Failure<RegisterMemberResponseDto>(new ErrorResponse
             {
@@ -237,13 +243,15 @@ public class AuthService : IAuthService
             };
         }
 
-        if (!await _unitOfWork.Members.IsFullNameUniqueAsync(registerMemberDto.FullName!))
+        // Check employer existence
+        var employer = await _unitOfWork.Employers.GetByIdAsync(registerMemberDto.EmployerId);
+        if (employer == null)
         {
             return ServerResponseExtensions.Failure<RegisterMemberResponseDto>(new ErrorResponse
             {
                 ResponseCode = "400",
-                ResponseMessage = "Duplicate Full Name",
-                ResponseDescription = "Full name is already in use."
+                ResponseMessage = "Invalid Employer",
+                ResponseDescription = "Employer does not exist."
             }, 400);
         }
 
@@ -254,16 +262,6 @@ public class AuthService : IAuthService
                 ResponseCode = "400",
                 ResponseMessage = "Duplicate Email",
                 ResponseDescription = "Email is already in use."
-            }, 400);
-        }
-
-        if (!await _unitOfWork.Members.IsPhoneUniqueAsync(registerMemberDto.PhoneNumber))
-        {
-            return ServerResponseExtensions.Failure<RegisterMemberResponseDto>(new ErrorResponse
-            {
-                ResponseCode = "400",
-                ResponseMessage = "Duplicate Phone Number",
-                ResponseDescription = "Phone number is already in use."
             }, 400);
         }
 
@@ -320,11 +318,11 @@ public class AuthService : IAuthService
                     CreatedAt = DateTime.Now,
                     User = applicationUser,
                     DateOfBirth = registerMemberDto.DateOfBirth,
-                    Age = registerMemberDto.Age
+                    Age = age,
+                    EmployerId = employer.Id // Link to employer
                 };
 
                 await _unitOfWork.Members.AddMemberAsync(member);
-
                 await transaction.CommitAsync();
 
                 // Automatically log in the user
@@ -337,13 +335,14 @@ public class AuthService : IAuthService
                     ResponseMessage = "Registration successful",
                     Data = new RegisterMemberResponseDto
                     {
-                        UserId = applicationUser.Id,
+                        Id = member.Id,
                         FullName = applicationUser.FullName,
                         Email = applicationUser.Email,
                         PhoneNumber = applicationUser.PhoneNumber,
                         IsActive = applicationUser.IsActive,
                         Age = member.Age,
                         DateOfBirth = member.DateOfBirth,
+                        EmployerId = member.EmployerId, 
                         Role = RolesConstant.Member,
                         Token = token
                     }
@@ -365,6 +364,7 @@ public class AuthService : IAuthService
             }
         }
     }
+
 
     public async Task<ServerResponse<RegisterEmployerResponseDto>> RegisterEmployerAsync(RegisterEmployerDto employerDto)
     {

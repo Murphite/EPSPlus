@@ -11,4 +11,5 @@ public interface IMemberRepository
     Task<bool> IsEmailUniqueAsync(string email);
     Task<bool> IsPhoneUniqueAsync(string phone);
     Task<bool> IsFullNameUniqueAsync(string name);
+    Task<IEnumerable<Member>> GetAllMembersAsync();
 }

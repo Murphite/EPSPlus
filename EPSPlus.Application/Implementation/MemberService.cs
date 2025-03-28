@@ -36,10 +36,13 @@ public class MemberService : IMemberService
 
         var memberDto = new MemberDto
         {
+            Id = member.Id,
+            ActiveStatus = member.User.IsActive,
             FullName = member.User.FullName,
             Email = member.User.Email,
             PhoneNumber = member.User.PhoneNumber,
-            Age = DateTime.UtcNow.Year - member.DateOfBirth.Year,
+            DateOfBirth = member.DateOfBirth,
+            Age = DateTime.Now.Year - member.DateOfBirth.Year,
             CompanyName = member.Employer?.CompanyName
         };
 
@@ -52,14 +55,49 @@ public class MemberService : IMemberService
         };
     }
 
+    public async Task<ServerResponse<IEnumerable<MemberDto>>> GetAllMembersAsync()
+    {
+        var members = await _unitOfWork.Members.GetAllMembersAsync();
 
-    public async Task<ServerResponse<MemberDto>> UpdateMemberAsync(MemberDto memberDto)
+        if (!members.Any())
+        {
+            return ServerResponseExtensions.Failure<IEnumerable<MemberDto>>(new ErrorResponse
+            {
+                ResponseCode = "404",
+                ResponseMessage = "No Members Found",
+                ResponseDescription = "There are no registered members."
+            }, 404);
+        }
+
+        var memberDtos = members.Select(member => new MemberDto
+        {
+            Id = member.Id,
+            FullName = member.User.FullName,
+            Email = member.User.Email,
+            DateOfBirth = member.DateOfBirth,
+            PhoneNumber = member.User.PhoneNumber,
+            Age = DateTime.Now.Year - member.DateOfBirth.Year,
+            CompanyName = member.Employer?.CompanyName,
+            ActiveStatus = member.User.IsActive
+        }).ToList();
+
+        return new ServerResponse<IEnumerable<MemberDto>>
+        {
+            IsSuccessful = true,
+            ResponseCode = "200",
+            ResponseMessage = "Members retrieved successfully.",
+            Data = memberDtos
+        };
+    }
+
+
+    public async Task<ServerResponse<UpdateMemberDto>> UpdateMemberAsync(UpdateMemberDto memberDto)
     {
         var member = await _unitOfWork.Members.GetMemberByIdAsync(memberDto.Id);
 
         if (member == null)
         {
-            return ServerResponseExtensions.Failure<MemberDto>(new ErrorResponse
+            return ServerResponseExtensions.Failure<UpdateMemberDto>(new ErrorResponse
             {
                 ResponseCode = "404",
                 ResponseMessage = "Member Not Found",
@@ -67,21 +105,57 @@ public class MemberService : IMemberService
             }, 404);
         }
 
-        member.User.PhoneNumber = memberDto.PhoneNumber;
-        member.User.Email = memberDto.Email;
-        member.Employer.CompanyName = memberDto.CompanyName;
-        member.User.IsActive = memberDto.ActiveStatus;
+        if (member.User != null)
+        {
+            member.User.PhoneNumber = memberDto.PhoneNumber;
+            member.User.FullName = memberDto.FullName;
+            member.User.Email = memberDto.Email;
+            member.User.IsActive = memberDto.IsActive;
 
+            if (member.User.MemberDetails != null)
+            {
+                member.User.MemberDetails.DateOfBirth = memberDto.DateOfBirth;
+                member.User.MemberDetails.EmployerId = memberDto.EmployerId;
+                member.User.MemberDetails.Age = CalculateAge(memberDto.DateOfBirth);
+            }
+            else
+            {
+                return ServerResponseExtensions.Failure<UpdateMemberDto>(new ErrorResponse
+                {
+                    ResponseCode = "400",
+                    ResponseMessage = "MemberDetails Not Found",
+                    ResponseDescription = $"No member details found for member ID {memberDto.Id}."
+                }, 400);
+            }
+        }
+        else
+        {
+            return ServerResponseExtensions.Failure<UpdateMemberDto>(new ErrorResponse
+            {
+                ResponseCode = "400",
+                ResponseMessage = "User Not Found",
+                ResponseDescription = $"The member with ID {memberDto.Id} does not have a linked user."
+            }, 400);
+        }
 
         await _unitOfWork.Members.UpdateMemberAsync(member);
 
-        return new ServerResponse<MemberDto>
+        return new ServerResponse<UpdateMemberDto>
         {
             IsSuccessful = true,
             ResponseCode = "200",
             ResponseMessage = "Member updated successfully.",
             Data = memberDto
         };
+    }
+
+    // Method to calculate age
+    private int CalculateAge(DateTime dateOfBirth)
+    {
+        var today = DateTime.Today;
+        var age = today.Year - dateOfBirth.Year;
+        if (dateOfBirth.Date > today.AddYears(-age)) age--;
+        return age;
     }
 
 

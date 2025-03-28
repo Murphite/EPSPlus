@@ -78,6 +78,7 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
             {
                 Id = "user1", // Employer
                 UserName = "techcorp_admin",
+                IsActive = true,
                 FullName = "techcorp_employer",
                 PhoneNumber = "09023456789",
                 NormalizedUserName = "TECHCORP_ADMIN",
@@ -92,6 +93,7 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
             {
                 Id = "user2", // Employer
                 UserName = "innovate_admin",
+                IsActive = true,
                 FullName = "innovate_employer",
                 PhoneNumber = "09023456789",
                 NormalizedUserName = "INNOVATE_ADMIN",
@@ -106,6 +108,7 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
             {
                 Id = "user3", // ✅ Member
                 UserName = "member_one",
+                IsActive = true,
                 FullName = "member_one",
                 PhoneNumber = "09023456789",
                 NormalizedUserName = "MEMBER_ONE",
@@ -122,6 +125,7 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
                 UserName = "member_two",
                 FullName = "member_two",
                 PhoneNumber = "08023456789",
+                IsActive = true,
                 NormalizedUserName = "MEMBER_TWO",
                 Email = "member2@example.com",
                 NormalizedEmail = "MEMBER2@EXAMPLE.COM",
@@ -148,7 +152,7 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
         // Seeding Contributions
         modelBuilder.Entity<Contribution>().HasData(
             new Contribution { Id = "1", MemberId = "1", ContributionType = ContributionStatus.Monthly, Amount = 100.00m, ContributionDate = DateTime.Now, Status = "Completed" },
-            new Contribution { Id = "2", MemberId = "2", ContributionType = ContributionStatus.Voluntary, Amount = 200.00m, ContributionDate = DateTime.Now, Status = "Pending" }
+            new Contribution { Id = "2", MemberId = "2", ContributionType = ContributionStatus.Voluntary, Amount = 200.00m, ContributionDate = DateTime.Now, Status = "Completed" }
         );
 
         // Seeding Transactions

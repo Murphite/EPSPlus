@@ -16,7 +16,18 @@ public class EmployerController : Controller
     {
         _employerService = employerService;
     }
-       
+
+
+    [HttpGet("all-employers")]
+    public async Task<IActionResult> GetAllEmployers()
+    {
+        var response = await _employerService.GetAllEmployersAsync();
+        if (!response.IsSuccessful)
+            return NotFound(response);
+
+        return Ok(response);
+    }
+
     [HttpGet("{employerId}")]
     public async Task<IActionResult> GetEmployerById(string employerId)
     {
@@ -28,7 +39,7 @@ public class EmployerController : Controller
     }
 
     [HttpPut("update")]
-    public async Task<IActionResult> UpdateEmployer([FromBody] EmployerDto employerDto)
+    public async Task<IActionResult> UpdateEmployer([FromBody] UpdateEmployerDto employerDto)
     {
         var response = await _employerService.UpdateEmployerAsync(employerDto);
         if (!response.IsSuccessful)

@@ -36,7 +36,6 @@ public class ContributionStatementDto
 {
     public string? MemberId { get; set; }
     public decimal TotalContributions { get; set; }
-    public string? ContributionType { get; set; }
     public List<ContributionDto>? Contributions { get; set; }  
 }
 

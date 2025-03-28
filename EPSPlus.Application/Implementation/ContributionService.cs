@@ -87,7 +87,7 @@ public class ContributionService : IContributionService
         };
 
         await _unitOfWork.Contributions.AddVoluntaryContributionAsync(contribution);
-        await _unitOfWork.SaveChangesAsync(); // ✅ Commit transaction
+        await _unitOfWork.SaveChangesAsync();
 
         return new ServerResponse<string>
         {

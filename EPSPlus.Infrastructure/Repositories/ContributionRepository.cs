@@ -74,6 +74,16 @@ public class ContributionRepository : IContributionRepository
     }
 
 
+    public async Task<Contribution?> GetVoluntaryContributionAsync(string memberId, DateTime contributionDate)
+    {
+        return await _context.Contributions
+            .Where(c => c.MemberId == memberId
+                        && c.ContributionType == ContributionStatus.Voluntary
+                        && c.ContributionDate.Year == contributionDate.Year
+                        && c.ContributionDate.Month == contributionDate.Month)
+            .FirstOrDefaultAsync();
+    }
+
     private async Task ValidateContribution(Contribution contribution)
     {
         if (contribution.Amount <= 0)
@@ -90,7 +100,7 @@ public class ContributionRepository : IContributionRepository
     public async Task<List<Member>> GetAllContributingMembersAsync()
     {
         return await _context.Members
-            .Where(m => m.Contributions.Any()) // Fetch only members who have contributed
+            .Where(m => m.Contributions.Any()) 
             .ToListAsync();
     }
 

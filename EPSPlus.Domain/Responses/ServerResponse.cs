@@ -45,7 +45,7 @@ public static class ServerResponseExtensions
         {
             IsSuccessful = false,
             ResponseCode = statusCode.ToString(),
-            ResponseMessage = "Error occurred",
+            ResponseMessage = error.ResponseDescription,
             ErrorResponse = error
         };
     }

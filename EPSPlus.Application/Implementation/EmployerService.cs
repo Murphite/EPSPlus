@@ -112,6 +112,17 @@ public class EmployerService : IEmployerService
             }, 404);
         }
 
+        if (employer.User == null)
+        {
+            return ServerResponseExtensions.Failure<string>(new ErrorResponse
+            {
+                ResponseCode = "500",
+                ResponseMessage = "Employer user reference is null.",
+                ResponseDescription = $"The employer with ID {employerDto.Id} has no associated user."
+            }, 500);
+        }
+
+
         employer.CompanyName = employerDto.CompanyName;
         employer.RegistrationNumber = employerDto.RegistrationNumber;
         employer.User.IsActive = employerDto.ActiveStatus;

@@ -11,4 +11,5 @@ public interface IAuthService
     Task<ServerResponse<PasswordResetResponseDto>> ResetPassword(ResetPasswordDto resetPasswordDto, string email);
     Task<ServerResponse<RegisterMemberResponseDto>> RegisterMemberAsync(RegisterMemberDto registerMemberDto);
     Task<ServerResponse<RegisterEmployerResponseDto>> RegisterEmployerAsync(RegisterEmployerDto employerDto);
+    Task<ServerResponse<RegisterAdminResponseDto>> RegisterAdminAsync(RegisterAdminDto registerAdminDto);
 }

@@ -210,13 +210,12 @@ public class AuthService : IAuthService
         };
     }
 
-
     public async Task<ServerResponse<RegisterMemberResponseDto>> RegisterMemberAsync(RegisterMemberDto registerMemberDto)
     {
         // Calculate Age from Date of Birth
         var today = DateTime.Today;
         var age = today.Year - registerMemberDto.DateOfBirth.Year;
-        if (registerMemberDto.DateOfBirth.Date > today.AddYears(-age)) age--; // Adjust if birthday hasn't occurred this year
+        if (registerMemberDto.DateOfBirth.Date > today.AddYears(-age)) age--; 
 
         // Age validation
         if (age < 18 || age > 70)
@@ -319,7 +318,7 @@ public class AuthService : IAuthService
                     User = applicationUser,
                     DateOfBirth = registerMemberDto.DateOfBirth,
                     Age = age,
-                    EmployerId = employer.Id // Link to employer
+                    EmployerId = employer.Id 
                 };
 
                 await _unitOfWork.Members.AddMemberAsync(member);
@@ -364,7 +363,6 @@ public class AuthService : IAuthService
             }
         }
     }
-
 
     public async Task<ServerResponse<RegisterEmployerResponseDto>> RegisterEmployerAsync(RegisterEmployerDto employerDto)
     {
@@ -416,6 +414,7 @@ public class AuthService : IAuthService
                 {
                     FullName = employerDto.CompanyName,
                     UserName = employerDto.Email,
+                    PhoneNumber = employerDto.PhoneNumber,
                     UserType = "Employer",
                     Email = employerDto.Email,
                     CreatedAt = DateTime.Now,
@@ -504,7 +503,127 @@ public class AuthService : IAuthService
         }
     }
 
+    public async Task<ServerResponse<RegisterAdminResponseDto>> RegisterAdminAsync(RegisterAdminDto registerAdminDto)
+    {
+        // Validate password confirmation
+        if (registerAdminDto.Password != registerAdminDto.ConfirmPassword)
+        {
+            return new ServerResponse<RegisterAdminResponseDto>
+            {
+                IsSuccessful = false,
+                ErrorResponse = new ErrorResponse
+                {
+                    ResponseCode = "400",
+                    ResponseMessage = "Passwords do not match",
+                    ResponseDescription = "Password and confirmation password do not match."
+                }
+            };
+        }
 
+        // Check if email is unique
+        if (!await _unitOfWork.Admins.IsEmailUniqueAsync(registerAdminDto.Email))
+        {
+            return ServerResponseExtensions.Failure<RegisterAdminResponseDto>(new ErrorResponse
+            {
+                ResponseCode = "400",
+                ResponseMessage = "Duplicate Email",
+                ResponseDescription = "Email is already in use."
+            }, 400);
+        }
+
+        using (var transaction = await _unitOfWork.Repository.BeginTransactionAsync())
+        {
+            try
+            {
+                var applicationUser = new ApplicationUser
+                {
+                    FullName = registerAdminDto.FullName,
+                    UserName = registerAdminDto.Email,
+                    UserType = "Admin",
+                    Email = registerAdminDto.Email,
+                    PhoneNumber = registerAdminDto.PhoneNumber,
+                    CreatedAt = DateTime.Now,
+                    IsActive = true,
+                };
+
+                var result = await _userManager.CreateAsync(applicationUser, registerAdminDto.Password);
+                if (!result.Succeeded)
+                {
+                    await transaction.RollbackAsync();
+                    return new ServerResponse<RegisterAdminResponseDto>
+                    {
+                        IsSuccessful = false,
+                        ErrorResponse = new ErrorResponse
+                        {
+                            ResponseCode = "400",
+                            ResponseMessage = "User creation failed",
+                            ResponseDescription = string.Join("; ", result.Errors.Select(e => e.Description))
+                        }
+                    };
+                }
+
+                result = await _userManager.AddToRoleAsync(applicationUser, RolesConstant.Admin);
+                if (!result.Succeeded)
+                {
+                    await transaction.RollbackAsync();
+                    return new ServerResponse<RegisterAdminResponseDto>
+                    {
+                        IsSuccessful = false,
+                        ErrorResponse = new ErrorResponse
+                        {
+                            ResponseCode = "400",
+                            ResponseMessage = "Failed to assign role",
+                            ResponseDescription = string.Join("; ", result.Errors.Select(e => e.Description))
+                        }
+                    };
+                }
+
+                var admin = new Admin
+                {
+                    UserId = applicationUser.Id,
+                    CreatedAt = DateTime.UtcNow,
+                    User = applicationUser
+                };
+
+                await _unitOfWork.Admins.AddAdminAsync(admin);
+                await transaction.CommitAsync();
+
+                // Automatically log in the admin
+                var token = await GenerateJwtToken(applicationUser);
+
+                return new ServerResponse<RegisterAdminResponseDto>
+                {
+                    IsSuccessful = true,
+                    ResponseCode = "00",
+                    ResponseMessage = "Admin registration successful",
+                    Data = new RegisterAdminResponseDto
+                    {
+                        Id = admin.Id,
+                        FullName = applicationUser.FullName,
+                        Email = applicationUser.Email,
+                        PhoneNumber = applicationUser.PhoneNumber,
+                        IsActive = applicationUser.IsActive,
+                        Role = RolesConstant.Admin,
+                        Token = token
+                    }
+                };
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                return new ServerResponse<RegisterAdminResponseDto>
+                {
+                    IsSuccessful = false,
+                    ErrorResponse = new ErrorResponse
+                    {
+                        ResponseCode = "500",
+                        ResponseMessage = "Internal Server Error",
+                        ResponseDescription = ex.Message
+                    }
+                };
+            }
+        }
+    }
 
     private async Task<string> GenerateJwtToken(ApplicationUser user)
     {
@@ -529,4 +648,5 @@ public class AuthService : IAuthService
 
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
+
 }

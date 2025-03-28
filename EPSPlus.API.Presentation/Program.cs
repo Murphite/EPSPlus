@@ -27,16 +27,10 @@ builder.Services.AddSwaggerGen(c =>
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "EPSPlus API", Version = "v1" });
 });
 
-// Logging
-builder.Logging.AddSerilog();
-
+// Configure Serilog from appsettings.json
 builder.Host.UseSerilog((context, services, configuration) =>
 {
-    configuration.ReadFrom.Configuration(context.Configuration)
-                 .ReadFrom.Services(services)
-                 .Enrich.FromLogContext()
-                 .WriteTo.Console()
-                 .WriteTo.File("./logs/log-.txt", rollingInterval: RollingInterval.Day);
+    configuration.ReadFrom.Configuration(context.Configuration);
 });
 
 builder.Services.AddCustomHangfire(builder.Configuration);
@@ -83,7 +77,7 @@ app.UseStaticFiles();
 app.UseSession();
 app.UseMiddleware<ExceptionMiddleware>();
 app.UseHangfireDashboard();
-
+app.UseSerilogRequestLogging(); // Logs HTTP request details
 app.MapControllers();
 
 await DbInitializer.Run(app);

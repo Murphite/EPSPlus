@@ -79,7 +79,7 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
                 Id = "user1", // Employer
                 UserName = "techcorp_admin",
                 IsActive = true,
-                FullName = "techcorp_employer",
+                FullName = "Techcorp Employer",
                 PhoneNumber = "09023456789",
                 NormalizedUserName = "TECHCORP_ADMIN",
                 Email = "admin@techcorp.com",
@@ -94,7 +94,7 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
                 Id = "user2", // Employer
                 UserName = "innovate_admin",
                 IsActive = true,
-                FullName = "innovate_employer",
+                FullName = "Innovate Employer",
                 PhoneNumber = "09023456789",
                 NormalizedUserName = "INNOVATE_ADMIN",
                 Email = "admin@innovate.com",
@@ -109,7 +109,7 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
                 Id = "user3", // ✅ Member
                 UserName = "member_one",
                 IsActive = true,
-                FullName = "member_one",
+                FullName = "Member One",
                 PhoneNumber = "09023456789",
                 NormalizedUserName = "MEMBER_ONE",
                 Email = "member1@example.com",
@@ -123,7 +123,7 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
             {
                 Id = "user4", // ✅ Member
                 UserName = "member_two",
-                FullName = "member_two",
+                FullName = "Member Two",
                 PhoneNumber = "08023456789",
                 IsActive = true,
                 NormalizedUserName = "MEMBER_TWO",

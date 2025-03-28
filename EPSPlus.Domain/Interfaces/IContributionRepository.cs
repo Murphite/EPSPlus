@@ -12,6 +12,7 @@ public interface IContributionRepository
     Task<IEnumerable<Contribution>> GetContributionsByMemberIdAsync(string memberId);
     Task<ContributionStatement> GenerateContributionStatementAsync(string memberId);
     Task<List<Contribution>> GetMonthlyContributionAsync(string memberId);
+    Task<Contribution?> GetVoluntaryContributionAsync(string memberId, DateTime contributionDate);
     Task<Contribution?> GetMonthlyContributionAsync(string memberId, DateTime contributionDate);
     Task<List<Member>> GetAllContributingMembersAsync();
     Task<List<Contribution>> GetFailedContributionsAsync();

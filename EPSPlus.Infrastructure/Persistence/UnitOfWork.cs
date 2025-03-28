@@ -11,12 +11,14 @@ public class UnitOfWork : IUnitOfWork
     public IEmployerRepository Employers { get; }
     public IMemberRepository Members { get; }
     public ITransactionRepository Transactions { get; }
+    public IAdminRepository Admins { get; }
     public IRepository Repository { get; }
 
     public UnitOfWork(AppDbContext context,
                       IContributionRepository contributions,
                       IEmployerRepository employers,
                       IMemberRepository members,
+                      IAdminRepository admins,
                       ITransactionRepository transactions,
                       IRepository repository)
     {
@@ -24,6 +26,7 @@ public class UnitOfWork : IUnitOfWork
         Contributions = contributions;
         Employers = employers;
         Members = members;
+        Admins = admins;
         Transactions = transactions;
         Repository = repository;
     }

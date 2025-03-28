@@ -3,13 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.10.34902.84
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EPSPlus.API.Presentation", "EPSPlus.API.Presentation\EPSPlus.API.Presentation.csproj", "{E6A434A7-19AF-411F-A451-D159EBEB49FA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EPSPlus.API.Presentation", "EPSPlus.API.Presentation\EPSPlus.API.Presentation.csproj", "{E6A434A7-19AF-411F-A451-D159EBEB49FA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EPSPlus.Application", "EPSPlus.Application\EPSPlus.Application.csproj", "{94318A41-F13C-42F5-A123-01E9E8D54A12}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EPSPlus.Application", "EPSPlus.Application\EPSPlus.Application.csproj", "{94318A41-F13C-42F5-A123-01E9E8D54A12}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EPSPlus.Infrastructure", "EPSPlus.Infrastructure\EPSPlus.Infrastructure.csproj", "{0C686734-277F-410B-981B-8D80603B207E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EPSPlus.Infrastructure", "EPSPlus.Infrastructure\EPSPlus.Infrastructure.csproj", "{0C686734-277F-410B-981B-8D80603B207E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EPSPlus.Domain", "EPSPlus.Domain\EPSPlus.Domain.csproj", "{4DBD7C6C-C204-498B-AA51-16236260277B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EPSPlus.Domain", "EPSPlus.Domain\EPSPlus.Domain.csproj", "{4DBD7C6C-C204-498B-AA51-16236260277B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EPSPlus.Tests", "EPSPlus.Tests\EPSPlus.Tests.csproj", "{9F63F221-1221-4BE3-93BB-81396452B2A8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{4DBD7C6C-C204-498B-AA51-16236260277B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4DBD7C6C-C204-498B-AA51-16236260277B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4DBD7C6C-C204-498B-AA51-16236260277B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9F63F221-1221-4BE3-93BB-81396452B2A8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9F63F221-1221-4BE3-93BB-81396452B2A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9F63F221-1221-4BE3-93BB-81396452B2A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9F63F221-1221-4BE3-93BB-81396452B2A8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

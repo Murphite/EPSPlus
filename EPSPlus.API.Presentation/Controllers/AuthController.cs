@@ -36,6 +36,16 @@ public class AuthController : Controller
         return Ok(response);
     }
 
+    [HttpPost("register-admin")]
+    public async Task<IActionResult> RegisterAdmin([FromBody] RegisterAdminDto adminDto)
+    {
+        var response = await _authService.RegisterAdminAsync(adminDto);
+        if (!response.IsSuccessful)
+            return BadRequest(response);
+
+        return Ok(response);
+    }
+
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginUserDto loginDto)
     {

@@ -81,6 +81,7 @@ public class RegisterEmployerDto
     [Required]
     public string CompanyName { get; set; } = string.Empty;
     public string Email { get; set; } = string.Empty;
+    public string PhoneNumber { get; set; } = string.Empty;
 
     [Required]
     public string RegistrationNumber { get; set; } = string.Empty;
@@ -105,4 +106,24 @@ public class RegisterEmployerResponseDto
     public bool ActiveStatus { get; set; }
     public string? Role { get; set; }
     public string? Token { get; set; }
+}
+
+public class RegisterAdminDto
+{
+    public string FullName { get; set; } = default!;
+    public string Email { get; set; } = default!;
+    public string PhoneNumber { get; set; } = default!;
+    public string Password { get; set; } = default!;
+    public string ConfirmPassword { get; set; } = default!;
+}
+
+public class RegisterAdminResponseDto
+{
+    public string Id { get; set; } = default!;
+    public string FullName { get; set; } = default!;
+    public string Email { get; set; } = default!;
+    public string PhoneNumber { get; set; } = default!;
+    public bool IsActive { get; set; }
+    public string Role { get; set; } = "Admin";
+    public string Token { get; set; } = default!;
 }

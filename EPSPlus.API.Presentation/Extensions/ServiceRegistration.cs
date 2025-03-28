@@ -116,6 +116,7 @@ public static class ServiceRegistration
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IJwtService, JwtService>();
         services.AddScoped<IRepository, Repository>();
+        services.AddScoped<IAdminRepository, AdminRepository>();
         services.AddScoped<IContributionRepository, ContributionRepository>();
         services.AddScoped<IEmployerRepository, EmployerRepository>();
         services.AddScoped<IMemberRepository, MemberRepository>();
